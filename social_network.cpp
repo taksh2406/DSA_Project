@@ -460,6 +460,80 @@ public:
         return nullptr;
     }
 
+    bool deleteUser(string username)
+    {
+        if (users.find(username) == users.end())
+        {
+            cout << " User @" << username << " does not exist!" << endl;
+            return false;
+        }
+
+        sqlite3_stmt *stmt;
+        const char *deleteSQL = "DELETE FROM Users WHERE username = ?;";
+
+        int rc = sqlite3_prepare_v2(db, deleteSQL, -1, &stmt, nullptr);
+        if (rc != SQLITE_OK)
+        {
+            cerr << " Failed to prepare delete statement: " << sqlite3_errmsg(db) << endl;
+            return false;
+        }
+
+        sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+        rc = sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        if (rc != SQLITE_DONE)
+        {
+            cerr << "❌ Failed to delete user: " << sqlite3_errmsg(db) << endl;
+            return false;
+        }
+
+        // Remove any connections referencing this user from DB
+        const char *deleteConn1 = "DELETE FROM Connections WHERE user1 = ? OR user2 = ?;";
+        rc = sqlite3_prepare_v2(db, deleteConn1, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, username.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        // Remove pending friend requests referencing this user from DB
+        const char *deleteReqs = "DELETE FROM FriendRequests WHERE sender = ? OR receiver = ?;";
+        rc = sqlite3_prepare_v2(db, deleteReqs, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, username.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        // Remove from in-memory adjacency lists
+        for (string friendUsername : adjList[username])
+        {
+            vector<string> &friendsList = adjList[friendUsername];
+            friendsList.erase(remove(friendsList.begin(), friendsList.end(), username), friendsList.end());
+        }
+
+        // Remove from all adjacency lists
+        for (auto &pair : adjList)
+        {
+            vector<string> &connections = pair.second;
+            connections.erase(remove(connections.begin(), connections.end(), username), connections.end());
+        }
+
+        // Remove pending requests in memory
+        for (auto &pair : friendRequests)
+        {
+            vector<string> &reqs = pair.second;
+            reqs.erase(remove(reqs.begin(), reqs.end(), username), reqs.end());
+        }
+
+        adjList.erase(username);
+        friendRequests.erase(username);
+        users.erase(username);
+
+        cout << " User @" << username << " deleted successfully!" << endl;
+        waitAndClear();
+        return true;
+    }
+
 
 };
 
