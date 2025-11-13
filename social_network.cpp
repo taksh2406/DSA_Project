@@ -89,6 +89,31 @@ public:
         file.close();
         return false;
     }
+  // Verify login using encrypted password
+    bool verifyLogin(string username, string password)
+    {
+        ifstream file(CREDENTIALS_FILE);
+        if (!file.is_open())
+        {
+            cerr << " No users registered yet!" << endl;
+            return false;
+        }
 
+        string encrypted = encryptPassword(password);
+        string user, pass;
+        while (file >> user >> pass)
+        {
+            if (user == username && pass == encrypted)
+            {
+                file.close();
+                return true;
+            }
+        }
+        file.close();
+        return false;
+    }
+
+    
+    
     
 };
