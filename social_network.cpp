@@ -932,6 +932,47 @@ public:
         }
         sleep(3);
     }
+
+    void viewMyBio(const string &username)
+    {
+        clearScreen();
+        cout << "===== MY BIO =====\n";
+
+        if (userBio[username].empty())
+            cout << "(No bio added yet)\n";
+        else
+            cout << userBio[username] << endl;
+
+        sleep(2);
+    }
+
+    void editMyBio(const string &username)
+    {
+        clearScreen();
+        cout << "===== EDIT BIO =====\n";
+        cout << "Type your new bio below:\n\n";
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        string bio;
+        getline(cin, bio);
+
+        // Update DB
+        sqlite3_stmt *stmt;
+        const char *sql =
+            "UPDATE Users SET bio = ? WHERE username = ?;";
+
+        sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, bio.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, username.c_str(), -1, SQLITE_TRANSIENT);
+
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        userBio[username] = bio;
+
+        cout << "✅ Bio updated!" << endl;
+        sleep(2);
+    }
 };
 
 void userMenu(SocialNetworkGraph &network, string loggedInUser)
