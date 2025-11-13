@@ -150,7 +150,30 @@ public:
         }
         return "";
     }
+  string login()
+    {
+        string username, password;
 
+        cout << "\n===== LOGIN =====" << endl;
+        cout << "Enter username: ";
+        cin >> username;
+        cout << "Enter password: ";
+        cin >> password;
+        clearScreen();
+
+        if (verifyLogin(username, password))
+        {
+            cout << "✅ Login successful! Welcome back, @" << username << endl;
+            waitAndClear();
+            return username;
+        }
+        else
+        {
+            cout << "❌ Invalid username or password!" << endl;
+            waitAndClear();
+            return "";
+        }
+    }
     
     
     
