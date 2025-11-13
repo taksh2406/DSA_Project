@@ -377,6 +377,29 @@ public:
         cout << "|   ********************   |\n";
         cout << "+--------------------------+\n";
     }
+
+    void displayMyProfile(string username)
+    {
+        // clearScreen();
+        User *user = findUser(username);
+        if (user)
+        {
+            cout << "\n===== MY PROFILE =====\n";
+            displayAvatar();
+            user->display();
+        }
+    }
+    
+    User *findUser(string username)
+    {
+        if (users.find(username) != users.end())
+        {
+            return &users[username];
+        }
+        return nullptr;
+    }
+
+
 };
 
 
