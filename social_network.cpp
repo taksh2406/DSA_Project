@@ -358,7 +358,25 @@ private:
         return true;
     }
 
+
+
 public:
+
+    SocialNetworkGraph()
+    {
+        if (initDatabase())
+        {
+            loadFromDatabase();
+        }
+    }
+
+    ~SocialNetworkGraph()
+    {
+        if (db)
+        {
+            sqlite3_close(db);
+        }
+    }
 
     void displayAvatar()
     {
