@@ -605,6 +605,30 @@ public:
         return mutualFriends;
     }
 
+    void displayMyConnections(string username)
+    {
+        clearScreen();
+        if (users.find(username) == users.end())
+        {
+            cout << " User not found!" << endl;
+            return;
+        }
+
+        cout << "\n===== MY CONNECTIONS =====" << endl;
+        if (adjList[username].empty())
+        {
+            cout << "No connections yet." << endl;
+        }
+        else
+        {
+            for (size_t i = 0; i < adjList[username].size(); i++)
+            {
+                string friendUsername = adjList[username][i];
+                cout << (i + 1) << ". @" << friendUsername << " - " << users[friendUsername].name << endl;
+            }
+        }
+    }
+
 };
 
 
