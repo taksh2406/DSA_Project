@@ -28,6 +28,20 @@ void waitAndClear()
 clearScreen();
 }
 
+
+string encryptPassword(const string &password)
+{
+    unsigned long long hash = 5381;
+    for (char c : password)
+    {
+        hash = ((hash << 5) + hash) + static_cast<unsigned char>(c); // hash * 33 + c
+    }
+
+    string encrypted = to_string(hash);
+    reverse(encrypted.begin(), encrypted.end());
+    return encrypted;
+}
+
 class User //defining user
 {
 public:
