@@ -396,6 +396,55 @@ public:
         cout << "+--------------------------+\n";
     }
 
+    bool sendFriendRequest(const string &from, const string &to)
+    {
+        if (users.find(from) == users.end() || users.find(to) == users.end())
+        {
+            cout << "❌ One or both users not found!" << endl;
+            waitAndClear();
+            return false;
+        }
+        if (from == to)
+        {
+            cout << "❌ You cannot send a friend request to yourself!" << endl;
+            waitAndClear();
+            return false;
+        }
+        // Already friends?
+        if (find(adjList[from].begin(), adjList[from].end(), to) != adjList[from].end())
+        {
+            cout << "✅ You are already friends!" << endl;
+            waitAndClear();
+            return false;
+        }
+        // Request already sent?
+        auto &requestsForTo = friendRequests[to];
+        if (find(requestsForTo.begin(), requestsForTo.end(), from) != requestsForTo.end())
+        {
+            cout << "⏳ Friend request already sent!" << endl;
+            waitAndClear();
+            return false;
+        }
+        // If 'to' already sent a request to 'from', consider informing user that there's a pending incoming request;
+        // We keep separate: the receiver will see and accept/reject when they check.
+
+        // Add to DB
+        sqlite3_stmt *stmt;
+        const char *insertSQL = "INSERT OR IGNORE INTO FriendRequests (sender, receiver) VALUES (?, ?);";
+        sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, from.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, to.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        // Add to in-memory stack (vector push_back -> we'll treat as stack LIFO)
+        friendRequests[to].push_back(from);
+
+        cout << "📨 Friend request sent to @" << to << "!" << endl;
+        waitAndClear();
+        return true;
+    }
+
     bool addUser(string name, string username, string dob, string gender)
     {
         if (users.find(username) != users.end())
