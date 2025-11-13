@@ -1102,3 +1102,84 @@ void userMenu(SocialNetworkGraph &network, string loggedInUser)
     }
 }
 
+int main()
+{
+    SocialNetworkGraph network; //object for users and their connections
+    AuthSystem auth; //for login and signup
+
+    while (true)
+    {
+        clearScreen();
+        cout << "\n╔════════════════════════════════════════╗" << endl;
+        cout << "║   SOCIAL NETWORK GRAPH - DSA PROJECT   ║" << endl;
+        cout << "╚════════════════════════════════════════╝" << endl;
+
+        int choice;
+        cout << "\n1. Login" << endl;
+        cout << "2. Sign Up" << endl;
+        cout << "3. Exit" << endl;
+        cout << "Enter choice: ";
+        cin >> choice;
+        clearScreen();
+
+        string loggedInUser;
+
+        switch (choice)
+        {
+        case 1:
+            loggedInUser = auth.login();//handles user login
+            if (!loggedInUser.empty())
+            {
+              //check if user profile exists already , if not creates a new one
+                if (network.findUser(loggedInUser) == nullptr)
+                {
+                    string name, dob, gender;
+                    cout << "\nComplete your profile:" << endl;
+                    cout << "Enter full name: ";
+                    cin.ignore();
+                    getline(cin, name);
+                    cout << "Enter DOB (YYYY-MM-DD): ";
+                    cin >> dob;
+                    cout << "Enter gender: ";
+                    cin >> gender;
+                    network.addUser(name, loggedInUser, dob, gender);
+                }
+                userMenu(network, loggedInUser);
+            }
+            break;
+
+        case 2:
+            loggedInUser = auth.signUp(); //handles user signup
+            if (!loggedInUser.empty())
+            {
+                string name, dob, gender;
+                cout << "\nCreate your profile:" << endl;
+                cout << "Enter full name: ";
+                cin.ignore();
+                getline(cin, name);
+                cout << "Enter DOB (YYYY-MM-DD): ";
+                cin >> dob;
+                cout << "Enter gender: ";
+                cin >> gender;
+
+                if (network.addUser(name, loggedInUser, dob, gender))
+                {
+                    cout << "\n Profile created! Logging you in..." << endl;
+                    waitAndClear();
+                    userMenu(network, loggedInUser);
+                }
+            }
+            break;
+
+        case 3:
+            cout << "\n Thank you for using Social Network! Goodbye!" << endl;
+            return 0; //exit program
+
+        default:
+            cout << " Invalid choice!" << endl; 
+            waitAndClear();
+        }
+    }
+
+    return 0;
+}
