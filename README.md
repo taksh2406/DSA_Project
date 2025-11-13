@@ -1,6 +1,7 @@
 # DSA_Project
 A basic CLI-based social network using concepts and structures learned in DSA
 <br>
+<br>
 ********* About the Project ************
 <br>
 In this project, we try to emamulate how a social media website works, by making its equivalent on a terminal.
@@ -19,7 +20,9 @@ User needs to create multiple ID, and switch between them manually on the same d
 ************** HOW TO USE ******************
 <br>
 Input the number mentioned before the option to choose the function.
+<br>
 Follow the instruction as they appear on your screen.
+<br>
 Few screen are un-interactable, and will only be temporarily. (This is the case for View Only options.
 <br>
 <br>
