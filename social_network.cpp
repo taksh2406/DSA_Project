@@ -113,6 +113,45 @@ public:
         return false;
     }
 
+    string signUp()
+    {
+        string username, password, confirmPass;
+
+        cout << "\n===== SIGN UP =====" << endl;
+        cout << "Enter username: ";
+        cin >> username;
+        clearScreen();
+
+        if (usernameExists(username))
+        {
+            cout << " Username already exists! Try logging in." << endl;
+            waitAndClear();
+            return "";
+        }
+
+        cout << "Enter password: ";
+        cin >> password;
+        cout << "Confirm password: ";
+        cin >> confirmPass;
+        clearScreen();
+
+        if (password != confirmPass)
+        {
+            cout << " Passwords don't match!" << endl;
+            waitAndClear();
+            return "";
+        }
+
+        if (saveCredentials(username, password))
+        {
+            cout << " Account created successfully!" << endl;
+            waitAndClear();
+            return username;
+        }
+        return "";
+    }
+
+    
     
     
     
