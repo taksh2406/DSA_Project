@@ -30,3 +30,5 @@ ZephyrusOfWind - Adil Khan - B24CS1118
 Power4999 - Ashutosh Vidit Pal - B24CS1017
 <br>
 taksh2406 - Mehta Taksh Ashish - B24CS1115
+<br>
+kartik08 - Kartik Meena - B24EE1032
