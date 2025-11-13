@@ -646,6 +646,37 @@ public:
         sleep(2);
     }
 
+    void editMyNotice(const string &username)
+    {
+      // This will edit the noticeboard that is only visible to friend and the user itself, acting as a status or means of commmunication among the friends
+        clearScreen();
+        cout << "===== EDIT NOTICE =====\n";
+        cout << "Type your notice below.\n";
+        cout << "(Use single-line input)\n\n";
+
+        cin.ignore();
+        string newNotice;
+        getline(cin, newNotice);
+
+        // Save to DB
+        sqlite3_stmt *stmt;
+        const char *insertSQL =
+            "INSERT INTO NoticeBoard (username, notice) VALUES (?, ?) "
+            "ON CONFLICT(username) DO UPDATE SET notice = excluded.notice;";
+
+        sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, newNotice.c_str(), -1, SQLITE_TRANSIENT);
+
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        noticeBoard[username] = newNotice;
+
+        cout << "✅ Notice saved!" << endl;
+        sleep(2);
+    }
+
 };
 
 
