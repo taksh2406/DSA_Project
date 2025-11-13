@@ -179,7 +179,11 @@ public:
 class SocialNetworkGraph
 {
 private:
-  map <string, User> users;
+  map <string, User> users; // User to User
+  map <string, vector<string>> adjList;  //  User to friends list
+  map <string, vector<string>> friendRequests;  // REceiever Name to Stack/Vector of Senders
+  map <string, string> noticeBoard;  // A friend only noticeboard. 
+  map <string, string> userBio;  // Public Bio for all
 };
 
 
