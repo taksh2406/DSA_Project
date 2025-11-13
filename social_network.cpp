@@ -266,6 +266,98 @@ private:
         return true;
     }
 
+    bool loadFromDatabase()
+    {
+        const char *selectUsers = "SELECT username, name, dob, gender FROM Users;";
+        sqlite3_stmt *stmt;
+
+        int rc = sqlite3_prepare_v2(db, selectUsers, -1, &stmt, nullptr);
+        if (rc != SQLITE_OK)
+        {
+            cerr << "❌ Failed to fetch users: " << sqlite3_errmsg(db) << endl;
+            return false;
+        }
+
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            string username = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
+            string name = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+            string dob = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+            string gender = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 3));
+            string bio = (sqlite3_column_text(stmt, 4) ? reinterpret_cast<const char *>(sqlite3_column_text(stmt, 4)) : "");
+
+            users[username] = User(name, username, dob, gender);
+            noticeBoard[username];   // unchanged
+            userBio[username] = bio; // <-- ADD THIS
+            adjList[username] = vector<string>();
+            friendRequests[username] = vector<string>();
+        }
+        sqlite3_finalize(stmt);
+
+        const char *selectConnections = "SELECT user1, user2 FROM Connections;";
+        rc = sqlite3_prepare_v2(db, selectConnections, -1, &stmt, nullptr);
+        if (rc != SQLITE_OK)
+        {
+            cerr << " Failed to fetch connections: " << sqlite3_errmsg(db) << endl;
+            return false;
+        }
+
+        while (sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            string user1 = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 0));
+            string user2 = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+
+            // Ensure entries exist
+            if (adjList.find(user1) == adjList.end())
+                adjList[user1] = vector<string>();
+            if (adjList.find(user2) == adjList.end())
+                adjList[user2] = vector<string>();
+
+            adjList[user1].push_back(user2);
+        }
+        sqlite3_finalize(stmt);
+
+        // Load friend requests
+        const char *selectRequests = "SELECT sender, receiver FROM FriendRequests;";
+        sqlite3_stmt *stmt2;
+        rc = sqlite3_prepare_v2(db, selectRequests, -1, &stmt2, nullptr);
+        if (rc == SQLITE_OK)
+        {
+            while (sqlite3_step(stmt2) == SQLITE_ROW)
+            {
+                string sender = reinterpret_cast<const char *>(sqlite3_column_text(stmt2, 0));
+                string receiver = reinterpret_cast<const char *>(sqlite3_column_text(stmt2, 1));
+                // push_back keeps insertion order from DB; treat vector as stack (LIFO) later
+                friendRequests[receiver].push_back(sender);
+            }
+            sqlite3_finalize(stmt2);
+        }
+        else
+        {
+            // If table exists but prepare failed, report
+            // not fatal
+            sqlite3_finalize(stmt2);
+        }
+
+        // Load notices
+        const char *selectNotices = "SELECT username, notice FROM NoticeBoard;";
+        sqlite3_stmt *stmt3;
+        rc = sqlite3_prepare_v2(db, selectNotices, -1, &stmt3, nullptr);
+
+        if (rc == SQLITE_OK)
+        {
+            while (sqlite3_step(stmt3) == SQLITE_ROW)
+            {
+                string username = reinterpret_cast<const char *>(sqlite3_column_text(stmt3, 0));
+                string note = reinterpret_cast<const char *>(sqlite3_column_text(stmt3, 1));
+                noticeBoard[username] = note;
+            }
+        }
+        sqlite3_finalize(stmt3);
+
+        return true;
+    }
+
 public:
 
     void displayAvatar()
