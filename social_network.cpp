@@ -49,3 +49,27 @@ void display() const
 cout << "Gender: " << gender << endl;
 }
 };
+
+class AuthSystem
+{
+private:
+    const string CREDENTIALS_FILE = "credentials.txt";
+
+public:
+    // Save encrypted credentials
+    bool saveCredentials(string username, string password)
+    {
+        ofstream file(CREDENTIALS_FILE, ios::app);
+        if (!file.is_open())
+        {
+            cerr << " Error opening credentials file!" << endl;
+            return false;
+        }
+
+        string encrypted = encryptPassword(password);
+        file << username << " " << encrypted << endl;
+        file.close();
+        return true;
+    }
+   
+};
