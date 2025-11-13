@@ -534,6 +534,55 @@ public:
         return true;
     }
 
+    bool addConnection(string username1, string username2)
+    {
+        // mutual connection (adds both directions)
+        if (users.find(username1) == users.end() || users.find(username2) == users.end())
+        {
+            cout << "❌ One or both users not found!" << endl;
+            waitAndClear();
+            return false;
+        }
+
+        if (username1 == username2)
+        {
+            cout << "❌ Cannot add connection to self!" << endl;
+            waitAndClear();
+            return false;
+        }
+
+        vector<string> &friends1 = adjList[username1];
+        if (find(friends1.begin(), friends1.end(), username2) != friends1.end())
+        {
+            cout << "❌ Connection already exists!" << endl;
+            waitAndClear();
+            return false;
+        }
+
+        sqlite3_stmt *stmt;
+        const char *insertSQL = "INSERT OR IGNORE INTO Connections (user1, user2) VALUES (?, ?);";
+
+        // insert username1 -> username2
+        sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, username1.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, username2.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        // insert username2 -> username1
+        sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, username2.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, username1.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        adjList[username1].push_back(username2);
+        adjList[username2].push_back(username1);
+
+        cout << " Connection added between @" << username1 << " and @" << username2 << endl;
+        waitAndClear();
+        return true;
+    }
 
 };
 
