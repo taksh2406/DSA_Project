@@ -552,6 +552,53 @@ public:
         waitAndClear();
     }
 
+    void searchUsers(const string &viewer)
+    {
+        clearScreen();
+        string searchTerm;
+        cout << "\nEnter username to search: ";
+        cin >> searchTerm;
+        clearScreen();
+
+        User *user = findUser(searchTerm);
+        if (!user)
+        {
+            cout << "❌ User @" << searchTerm << " does not exist!" << endl;
+            sleep(2);
+            return;
+        }
+
+        cout << "\n===== USER PROFILE =====" << endl;
+        displayAvatar();
+
+        // Always public info
+        cout << "Name: " << user->name << endl;
+        cout << "Username: @" << user->username << endl;
+
+        // Friendship check
+        bool isFriend = false;
+        if (adjList.find(viewer) != adjList.end())
+        {
+            auto &friends = adjList[viewer];
+            if (find(friends.begin(), friends.end(), searchTerm) != friends.end())
+            {
+                isFriend = true;
+            }
+        }
+
+        // Private info only visible to friends
+        if (isFriend)
+        {
+            cout << "DOB: " << user->dob << endl;
+            cout << "Gender: " << user->gender << endl;
+        }
+
+        // Bio is public
+        cout << "\nBio: " << (userBio[searchTerm].empty() ? "(No bio added)" : userBio[searchTerm]) << endl;
+
+        sleep(3);
+    }
+
     bool addUser(string name, string username, string dob, string gender)
     {
         if (users.find(username) != users.end())
