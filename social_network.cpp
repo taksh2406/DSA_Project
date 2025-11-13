@@ -71,5 +71,24 @@ public:
         file.close();
         return true;
     }
-   
+   bool usernameExists(string username)
+    {
+        ifstream file(CREDENTIALS_FILE);
+        if (!file.is_open())
+            return false;
+
+        string user, pass;
+        while (file >> user >> pass)
+        {
+            if (user == username)
+            {
+                file.close();
+                return true;
+            }
+        }
+        file.close();
+        return false;
+    }
+
+    
 };
