@@ -18,3 +18,7 @@ User needs to create multiple ID, and switch between them manually on the same d
 Input the number mentioned before the option to choose the function.
 Follow the instruction as they appear on your screen.
 Few screen are un-interactable, and will only be temporarily. (This is the case for View Only options.
+
+
+************** USERNAME - REAL NAME- ROLL NUMBER ******************
+
