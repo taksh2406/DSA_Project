@@ -934,6 +934,130 @@ public:
     }
 };
 
+void userMenu(SocialNetworkGraph &network, string loggedInUser)
+{
+    int choice;
 
+    while (true)
+    {
+        clearScreen();
+        cout << "\n========================================" << endl;
+        cout << "     SOCIAL NETWORK - @" << loggedInUser << endl;
+        cout << "========================================" << endl;
+        cout << "1. View My Profile" << endl;
+        cout << "2. View My Connections" << endl;
+        cout << "3. Search User" << endl;
+        cout << "4. Send Friend Request" << endl;
+        cout << "5. View Pending Friend Requests" << endl;
+        cout << "6. View All Users" << endl;
+        cout << "7. Notice Board" << endl;
+        cout << "8. About (Bio)" << endl;
+        cout << "9. Logout" << endl;
+        cout << "========================================" << endl;
+        cout << "Enter choice: ";
+        cin >> choice;
+        clearScreen();
 
+        switch (choice)
+        {
+        case 1:
+            network.displayMyProfile(loggedInUser);
+            sleep(2);
+            break;
+
+        case 2:
+            network.displayMyConnections(loggedInUser);
+            sleep(2);
+            break;
+
+        case 3:
+            network.searchUsers(loggedInUser);
+
+            break;
+
+        case 4:
+        {
+            string targetUser;
+            cout << "\nEnter username to send request to: ";
+            cin >> targetUser;
+            network.sendFriendRequest(loggedInUser, targetUser);
+            break;
+        }
+
+        case 5:
+            network.viewAndHandleRequests(loggedInUser);
+            break;
+
+        case 6:
+            network.displayAllUsers();
+            sleep(2);
+            break;
+
+        case 7:
+        {
+            int nbChoice;
+            while (true)
+            {
+                clearScreen();
+                cout << "====== NOTICE BOARD ======\n";
+                cout << "1. View My Notice\n";
+                cout << "2. Edit My Notice\n";
+                cout << "3. View Friend's Notice\n";
+                cout << "4. Back\n";
+                cout << "Enter choice: ";
+                cin >> nbChoice;
+
+                if (nbChoice == 1)
+                    network.viewMyNotice(loggedInUser);
+                else if (nbChoice == 2)
+                    network.editMyNotice(loggedInUser);
+                else if (nbChoice == 3)
+                    network.viewFriendNotice(loggedInUser);
+                else if (nbChoice == 4)
+                    break;
+                else
+                {
+                    cout << "Invalid choice!\n";
+                    sleep(1);
+                }
+            }
+            break;
+        }
+
+        case 8:
+        {
+            int bchoice;
+            while (true)
+            {
+                clearScreen();
+                cout << "===== ABOUT / BIO =====\n";
+                cout << "1. View My Bio\n";
+                cout << "2. Edit My Bio\n";
+                cout << "3. Back\n";
+                cout << "Enter choice: ";
+                cin >> bchoice;
+
+                if (bchoice == 1)
+                    network.viewMyBio(loggedInUser);
+                else if (bchoice == 2)
+                    network.editMyBio(loggedInUser);
+                else if (bchoice == 3)
+                    break;
+                else
+                    cout << "Invalid choice!\n";
+            }
+            break;
+        }
+
+        case 9:
+            cout << "\n Logging out... Goodbye!" << endl;
+            waitAndClear();
+            return;
+
+        default:
+            cout << " Invalid choice!" << endl;
+            waitAndClear();
+        }
+    }
+}
 
