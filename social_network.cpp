@@ -629,6 +629,23 @@ public:
         }
     }
 
+    void viewMyNotice(const string &username)
+    {
+        clearScreen();
+        cout << "===== MY NOTICE =====\n";
+
+        if (noticeBoard.find(username) == noticeBoard.end())
+        {
+            cout << "(No notice written yet)\n";
+        }
+        else
+        {
+            cout << noticeBoard[username] << endl;
+        }
+
+        sleep(2);
+    }
+
 };
 
 
