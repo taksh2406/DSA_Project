@@ -584,6 +584,27 @@ public:
         return true;
     }
 
+    vector<string> findMutualConnections(string username, string usernameX)
+    {
+        vector<string> mutualFriends;
+
+      // Scour through the kist to find mutual friends
+        if (users.find(username) == users.end() || users.find(usernameX) == users.end())
+        {
+            cout << " One or both users not found!" << endl;
+            return mutualFriends;
+        }
+
+        set<string> friendsOfUser(adjList[username].begin(), adjList[username].end());
+        set<string> friendsOfX(adjList[usernameX].begin(), adjList[usernameX].end());
+
+        set_intersection(friendsOfUser.begin(), friendsOfUser.end(),
+                         friendsOfX.begin(), friendsOfX.end(),
+                         back_inserter(mutualFriends));
+
+        return mutualFriends;
+    }
+
 };
 
 
