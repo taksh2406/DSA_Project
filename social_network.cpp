@@ -189,13 +189,17 @@ private:
 
   bool initDatabase()
     {
-        int rc = sqlite3_open("social_network.db", &db);
-        if (rc)
+        int rc = sqlite3_open("social_network.db", &db); // Open social_network.db if it exists. If it does not, then create it.
+        if (rc) // Incase if database fails to open, this wil;l be printed
         {
             cerr << "❌ Can't open database: " << sqlite3_errmsg(db) << endl;
             return false;
         }
 
+      // This will create a User Table
+      // Username is the primary key
+      // name, date of birth and gender are the required fields
+      // Bio is optional to add. Add if you want, no pressure.
         const char *createUsersTable =
             "CREATE TABLE IF NOT EXISTS Users ("
             "username TEXT PRIMARY KEY,"
