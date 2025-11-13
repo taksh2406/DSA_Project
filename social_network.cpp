@@ -173,9 +173,15 @@ public:
             waitAndClear();
             return "";
         }
-    }
-    
-    
-    
-    
+    }    
 };
+
+class SocialNetworkGraph
+{
+private:
+  map <string, User> users;
+};
+
+
+
+
