@@ -27,4 +27,6 @@ Few screen are un-interactable, and will only be temporarily. (This is the case 
 <br>
 ZephyrusOfWind - Adil Khan - B24CS1118
 <br>
-Power4999 - Ashutosh Vidit Pal -B24CS1017 
+Power4999 - Ashutosh Vidit Pal - B24CS1017
+<br>
+taksh2406 - Mehta Taksh Ashish - B24CS1115
