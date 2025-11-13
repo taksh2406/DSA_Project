@@ -28,7 +28,7 @@ Input the number mentioned before the option to choose the function.
 <br>
 Follow the instruction as they appear on your screen.
 <br>
-Few screen are un-interactable, and will only be temporarily. (This is the case for View Only options.
+Few screen are un-interactable, and will only be temporarily. (This is the case for View Only options.)
 <br>
 <br>
 ************** USERNAME - REAL NAME- ROLL NUMBER ******************
