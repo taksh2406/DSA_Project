@@ -261,6 +261,26 @@ private:
 
         return true;
     }
+
+public:
+
+    void displayAvatar()
+    {
+      // A gender neutral avatar of a person amde using AsCii letters
+        cout << "+--------------------------+\n";
+        cout << "|          ****            |\n";
+        cout << "|        ********          |\n";
+        cout << "|       **********         |\n";
+        cout << "|      ************        |\n";
+        cout << "|      ************        |\n";
+        cout << "|       **********         |\n";
+        cout << "|        ********          |\n";
+        cout << "|          ****            |\n";
+        cout << "|      **************      |\n";
+        cout << "|    ******************    |\n";
+        cout << "|   ********************   |\n";
+        cout << "+--------------------------+\n";
+    }
 };
 
 
