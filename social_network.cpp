@@ -396,6 +396,49 @@ public:
         cout << "+--------------------------+\n";
     }
 
+    bool addUser(string name, string username, string dob, string gender)
+    {
+        if (users.find(username) != users.end())
+        {
+            cout << " User @" << username << " already exists!" << endl;
+            waitAndClear();
+            return false;
+        }
+
+        sqlite3_stmt *stmt;
+        const char *insertSQL = "INSERT INTO Users (username, name, dob, gender) VALUES (?, ?, ?, ?);";
+
+        int rc = sqlite3_prepare_v2(db, insertSQL, -1, &stmt, nullptr);
+        if (rc != SQLITE_OK)
+        {
+            cerr << "❌ Failed to prepare statement: " << sqlite3_errmsg(db) << endl;
+            return false;
+        }
+
+        sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, name.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 3, dob.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 4, gender.c_str(), -1, SQLITE_TRANSIENT);
+
+        rc = sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        if (rc != SQLITE_DONE)
+        {
+            cerr << " Failed to insert user: " << sqlite3_errmsg(db) << endl;
+            return false;
+        }
+
+        users[username] = User(name, username, dob, gender);
+        adjList[username] = vector<string>();
+        friendRequests[username] = vector<string>();
+        userBio[username] = "";
+
+        cout << " User @" << username << " added successfully!" << endl;
+        waitAndClear();
+        return true;
+    }
+
     void displayMyProfile(string username)
     {
         // clearScreen();
