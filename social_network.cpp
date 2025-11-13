@@ -1,6 +1,12 @@
-#include<iostream>
-
-
-
-
-
+#include <iostream>
+#include <string>
+#include <map>
+#include <vector>
+#include <set>
+#include <algorithm>
+#include <sqlite3.h>
+#include <fstream>
+#include <thread>
+#include <chrono>
+#include <cctype>
+#include <unistd.h>
