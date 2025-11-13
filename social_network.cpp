@@ -599,6 +599,23 @@ public:
         sleep(3);
     }
 
+    void displayAllUsers()
+    {
+        clearScreen();
+        if (users.empty())
+        {
+            cout << "No users in the network." << endl;
+            return;
+        }
+
+        cout << "\n===== ALL USERS IN NETWORK =====" << endl;
+        int count = 1;
+        for (auto &pair : users)
+        {
+            cout << count++ << ". @" << pair.first << " - " << pair.second.name << endl;
+        }
+    }
+
     bool addUser(string name, string username, string dob, string gender)
     {
         if (users.find(username) != users.end())
