@@ -4,7 +4,7 @@ A basic CLI-based social network using concepts and structures learned in DSA
 <br>
 ********* About the Project ************
 <br>
-In this project, we try to emamulate how a social media website works, by making its equivalent on a terminal.
+In this project, we try to emulate how a social media website works, by making its equivalent on a terminal.
 In this project, we have used many data structures, among whom are Graph, Vector and Stack
 We also used file handling, along with SQL to store the data we have given the code so it does not get deleted after each run of code. This further emamulates data storing nature of a social media network
 <br>
