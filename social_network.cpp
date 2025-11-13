@@ -677,6 +677,41 @@ public:
         sleep(2);
     }
 
+    void viewFriendNotice(const string &viewer)
+    {
+        clearScreen();
+        cout << "Enter friend's username: ";
+        string friendUser;
+        cin >> friendUser;
+
+        // Check existence
+        if (users.find(friendUser) == users.end())
+        {
+            cout << "❌ User does not exist!" << endl;
+            sleep(2);
+            return;
+        }
+
+        // Check friendship
+        auto &friends = adjList[viewer];
+        if (find(friends.begin(), friends.end(), friendUser) == friends.end())
+        {
+            cout << "❌ You are not friends. Cannot view their notice." << endl;
+            sleep(2);
+            return;
+        }
+
+        cout << "\n===== @" << friendUser << "'s NOTICE =====\n";
+        if (noticeBoard.find(friendUser) == noticeBoard.end())
+        {
+            cout << "(They have not written a notice yet)\n";
+        }
+        else
+        {
+            cout << noticeBoard[friendUser] << endl;
+        }
+        sleep(3);
+    }
 };
 
 
