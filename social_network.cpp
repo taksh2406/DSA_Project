@@ -445,6 +445,113 @@ public:
         return true;
     }
 
+    void viewAndHandleRequests(const string &username)
+    {
+        clearScreen();
+        if (users.find(username) == users.end())
+        {
+            cout << " User not found!" << endl;
+            waitAndClear();
+            return;
+        }
+
+        vector<string> &requests = friendRequests[username];
+        if (requests.empty())
+        {
+            cout << "📭 No pending friend requests." << endl;
+            waitAndClear();
+            return;
+        }
+
+        cout << "\n===== PENDING FRIEND REQUESTS (newest first) =====" << endl;
+        // Process as stack (LIFO): pop from back
+        while (!requests.empty())
+        {
+            string sender = requests.back();
+            // show one at a time
+            cout << "\nFriend request from @" << sender << endl;
+            cout << "Accept (A) / Reject (R) / Skip (S)? ";
+            char choice;
+            cin >> choice;
+            choice = static_cast<char>(toupper(choice));
+            if (choice == 'A')
+            {
+                acceptFriendRequest(sender, username);
+            }
+            else if (choice == 'R')
+            {
+                rejectFriendRequest(sender, username);
+            }
+            else if (choice == 'S')
+            {
+                // Move this request to front so it is treated as older (we'll pop then push_front simulation):
+                requests.pop_back();
+                // push at beginning (older)
+                requests.insert(requests.begin(), sender);
+                cout << "⏭ Skipped. Will appear later." << endl;
+                waitAndClear();
+            }
+            else
+            {
+                cout << "❌ Invalid choice. Skipping this request." << endl;
+                // pop anyway to avoid infinite loop; user can re-send if needed
+                requests.pop_back();
+                waitAndClear();
+            }
+        }
+        // After processing, refresh
+        clearScreen();
+        cout << "✅ Done processing friend requests." << endl;
+        waitAndClear();
+    }
+
+    void acceptFriendRequest(const string &from, const string &to)
+    {
+        // Remove from DB
+        sqlite3_stmt *stmt;
+        const char *deleteSQL = "DELETE FROM FriendRequests WHERE sender=? AND receiver=?;";
+        sqlite3_prepare_v2(db, deleteSQL, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, from.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, to.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        // Remove from in-memory requests (pop back expected, but ensure removal)
+        auto &requests = friendRequests[to];
+        auto it = find(requests.begin(), requests.end(), from);
+        if (it != requests.end())
+            requests.erase(it);
+
+        // Create mutual connection
+        addConnection(from, to); // addConnection handles DB and in-memory
+
+        // Inform user (addConnection already prints a message)
+        // but also show accept confirmation
+        cout << "✅ Friend request from @" << from << " accepted." << endl;
+        waitAndClear();
+    }
+
+    void rejectFriendRequest(const string &from, const string &to)
+    {
+        // Remove from DB
+        sqlite3_stmt *stmt;
+        const char *deleteSQL = "DELETE FROM FriendRequests WHERE sender=? AND receiver=?;";
+        sqlite3_prepare_v2(db, deleteSQL, -1, &stmt, nullptr);
+        sqlite3_bind_text(stmt, 1, from.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(stmt, 2, to.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        // Remove from in-memory requests
+        auto &requests = friendRequests[to];
+        auto it = find(requests.begin(), requests.end(), from);
+        if (it != requests.end())
+            requests.erase(it);
+
+        cout << "❌ Friend request from @" << from << " rejected." << endl;
+        waitAndClear();
+    }
+
     bool addUser(string name, string username, string dob, string gender)
     {
         if (users.find(username) != users.end())
