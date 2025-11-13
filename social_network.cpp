@@ -184,6 +184,83 @@ private:
   map <string, vector<string>> friendRequests;  // REceiever Name to Stack/Vector of Senders
   map <string, string> noticeBoard;  // A friend only noticeboard. 
   map <string, string> userBio;  // Public Bio for all
+
+  sqlite3 *db = nullptr;
+
+  bool initDatabase()
+    {
+        int rc = sqlite3_open("social_network.db", &db);
+        if (rc)
+        {
+            cerr << "❌ Can't open database: " << sqlite3_errmsg(db) << endl;
+            return false;
+        }
+
+        const char *createUsersTable =
+            "CREATE TABLE IF NOT EXISTS Users ("
+            "username TEXT PRIMARY KEY,"
+            "name TEXT NOT NULL,"
+            "dob TEXT NOT NULL,"
+            "gender TEXT NOT NULL,"
+            "bio TEXT);";
+
+        char *errMsg = nullptr;
+        rc = sqlite3_exec(db, createUsersTable, nullptr, nullptr, &errMsg);
+        if (rc != SQLITE_OK)
+        {
+            cerr << "❌ SQL error: " << errMsg << endl;
+            sqlite3_free(errMsg);
+            return false;
+        }
+
+        const char *createConnectionsTable =
+            "CREATE TABLE IF NOT EXISTS Connections ("
+            "user1 TEXT NOT NULL,"
+            "user2 TEXT NOT NULL,"
+            "PRIMARY KEY (user1, user2),"
+            "FOREIGN KEY (user1) REFERENCES Users(username) ON DELETE CASCADE,"
+            "FOREIGN KEY (user2) REFERENCES Users(username) ON DELETE CASCADE);";
+
+        rc = sqlite3_exec(db, createConnectionsTable, nullptr, nullptr, &errMsg);
+        if (rc != SQLITE_OK)
+        {
+            cerr << "❌ SQL error: " << errMsg << endl;
+            sqlite3_free(errMsg);
+            return false;
+        }
+
+        const char *createRequestsTable =
+            "CREATE TABLE IF NOT EXISTS FriendRequests ("
+            "sender TEXT NOT NULL,"
+            "receiver TEXT NOT NULL,"
+            "PRIMARY KEY (sender, receiver),"
+            "FOREIGN KEY (sender) REFERENCES Users(username) ON DELETE CASCADE,"
+            "FOREIGN KEY (receiver) REFERENCES Users(username) ON DELETE CASCADE);";
+
+        rc = sqlite3_exec(db, createRequestsTable, nullptr, nullptr, &errMsg);
+        if (rc != SQLITE_OK)
+        {
+            cerr << "❌ SQL error (FriendRequests): " << errMsg << endl;
+            sqlite3_free(errMsg);
+            return false;
+        }
+
+        const char *createNoticeTable =
+            "CREATE TABLE IF NOT EXISTS NoticeBoard ("
+            "username TEXT PRIMARY KEY,"
+            "notice TEXT,"
+            "FOREIGN KEY(username) REFERENCES Users(username) ON DELETE CASCADE);";
+
+        rc = sqlite3_exec(db, createNoticeTable, nullptr, nullptr, &errMsg);
+        if (rc != SQLITE_OK)
+        {
+            cerr << "❌ SQL error (NoticeBoard): " << errMsg << endl;
+            sqlite3_free(errMsg);
+            return false;
+        }
+
+        return true;
+    }
 };
 
 
